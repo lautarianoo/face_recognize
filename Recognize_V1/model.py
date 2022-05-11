@@ -1,6 +1,7 @@
 import os
 import sys
 import face_recognition
+from cv2 import cv2
 
 def train_model_by_img(name):
     if not os.path.exists("../data"):
@@ -34,6 +35,33 @@ def train_model_by_img(name):
     }
     return data
 
+def take_screenshots(video_path):
+    if not os.path.exists("../data_video"):
+        print("[ERROR] Not exists dataset")
+        sys.exit()
+
+    cap = cv2.VideoCapture(video_path)
+    count = 0
+    while True:
+        ret, frame = cap.read()
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        multiplier = fps * 3
+
+        if ret:
+            frame_id = int(round(cap.get(1)))
+            cv2.imshow("frame", frame)
+            k = cv2.waitKey(20)
+            if frame_id % multiplier == 0:
+                cv2.imwrite(f"../data_video/screen_{count}.jpg", frame)
+                count += 1
+            if k == ord("q"):
+                cv2.imwrite(f"../data_video/extra_screen_{count}.jpg", frame)
+                count += 1
+        else:
+            print('[ERROR] Cant get video')
+            break
+    cap.release()
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     train_model_by_img("Tayler")
