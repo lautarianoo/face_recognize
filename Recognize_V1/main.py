@@ -1,5 +1,6 @@
 import face_recognition
 from PIL import Image, ImageDraw
+import pickle
 
 def face_rec():
     face = face_recognition.load_image_file("../data/510.jpg")
@@ -35,6 +36,9 @@ def compare_faces(filepath1, filepath2):
     result = face_recognition.compare_faces([face_1_encoding], face_2_encoding)
     return result
 
+
+def detect_person_in_video():
+    data = pickle.loads()
 
 def main():
     extracting_face("../data/510.jpg")
