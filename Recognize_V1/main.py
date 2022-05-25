@@ -1,6 +1,6 @@
 import face_recognition
 from PIL import Image, ImageDraw
-import pickle
+import pickle, cv2
 
 def face_rec():
     face = face_recognition.load_image_file("../data/510.jpg")
@@ -37,8 +37,33 @@ def compare_faces(filepath1, filepath2):
     return result
 
 
-def detect_person_in_video():
-    data = pickle.loads()
+def detect_person_in_video(name_dataset, video_path):
+    data = pickle.loads(open(f'{name_dataset}', 'rb').read())
+    video = cv2.VideoCapture(video_path)
+
+    while True:
+        ret, image = video.read()
+        locations = face_recognition.face_locations(image, model="cnn")
+        encodings = face_recognition.face_encodings(image, locations)
+        for encoding, location in zip(encodings, locations):
+            result = face_recognition.compare_faces(data["encodings"], encoding)
+            match = None
+
+            if True in result:
+                match = data["name"]
+                print(f"Match found! {match}")
+            else:
+                print('Alarm!')
+            left_top = (location[3], location[0])
+            right_bottom = (location[1], location[2])
+            color = [0, 255, 0]
+            cv2.rectangle(image, left_top, right_bottom, color)
+
+        cv2.imshow("running", image)
+        k = cv2.waitKey(20)
+        if k == ord("q"):
+            break
+
 
 def main():
     extracting_face("../data/510.jpg")
